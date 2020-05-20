@@ -52,12 +52,12 @@ end_of_record
 TN:
 SF:src\modules\appointments\services\ListProviderAppointmentsService.ts
 FN:14,(anonymous_17)
-FN:15,ListProvidersMonthAvailabilityService
+FN:15,ListProviderAppointmentsService
 FN:20,(anonymous_19)
 FNF:3
 FNH:3
 FNDA:1,(anonymous_17)
-FNDA:1,ListProvidersMonthAvailabilityService
+FNDA:1,ListProviderAppointmentsService
 FNDA:1,(anonymous_19)
 DA:1,1
 DA:14,1
