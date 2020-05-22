@@ -13,8 +13,8 @@ export default {
 
   defaults: {
     from: {
-      email: 'seuemail',
-      name: 'seunome',
+      email: process.env.SES_FROM_EMAIL,
+      name: process.env.SES_FROM_NAME,
     },
   },
 } as IMailConfig;
