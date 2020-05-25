@@ -24,7 +24,7 @@ export default function ensureAunthenticated(
   const [, token] = authHeader.split(' ');
 
   try {
-    const decoded = verify(token, authConfig.jwt.secret);
+    const decoded = verify(token, authConfig.secret);
 
     const { sub } = decoded as ITokenPayload;
 

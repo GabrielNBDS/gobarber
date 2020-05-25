@@ -1,6 +1,6 @@
+import AUTH_SECRET from '@shared/utils/environment';
+
 export default {
-  jwt: {
-    secret: process.env.APP_SECRET,
-    expiresIn: '1d',
-  },
+  secret: AUTH_SECRET,
+  expiresIn: '1d',
 };
