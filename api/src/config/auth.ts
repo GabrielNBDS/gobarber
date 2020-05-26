@@ -1,6 +1,4 @@
-import AUTH_SECRET from '@shared/utils/environment';
-
 export default {
-  secret: AUTH_SECRET,
+  secret: process.env.APP_SECRET || 'default',
   expiresIn: '1d',
 };
