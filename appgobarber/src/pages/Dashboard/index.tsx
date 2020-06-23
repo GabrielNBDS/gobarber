@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
+import api from '../../services/api';
 import { useAuth } from '../../hooks/auth';
 
 import {
@@ -11,27 +11,53 @@ import {
   UserName,
   ProfileButton,
   UserAvatar,
+  ProvidersList,
 } from './styles';
 
+export interface Provider {
+  id: string;
+  name: string;
+  avatar_url: string;
+}
+
+export interface ProviderItem {
+  item: Provider;
+}
+
 const Dashboard: React.FC = () => {
+  const [providers, setProviders] = useState<Provider[]>([]);
+
   const { signOut, user } = useAuth();
   const { navigate } = useNavigation();
 
-  const navigateToProfile = useCallback(() => {
+  useEffect(() => {
+    api.get('providers').then((response) => {
+      setProviders(response.data);
+    });
+  }, [setProviders]);
+
+  /* const navigateToProfile = useCallback(() => {
     navigate('Profile');
-  }, [navigate]);
+  }, [navigate]); */
 
   return (
     <Container>
       <Header>
         <HeaderTitle>
-          Bem vindo, {'\n'}
+          Bem vindo,{'\n'}
           <UserName>{user.name}</UserName>
         </HeaderTitle>
-        <ProfileButton onPress={navigateToProfile}>
+        <ProfileButton onPress={signOut}>
           <UserAvatar source={{ uri: user.avatar_url }} />
         </ProfileButton>
       </Header>
+      <ProvidersList
+        data={providers}
+        keyExtractor={(provider: Provider) => provider.id}
+        renderItem={({ item }: ProviderItem) => (
+          <UserName>{item.name}</UserName>
+        )}
+      />
     </Container>
   );
 };
