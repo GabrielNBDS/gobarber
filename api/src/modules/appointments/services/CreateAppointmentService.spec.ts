@@ -1,24 +1,24 @@
 import AppError from '@shared/errors/AppError';
 import FakeNotificationsRepository from '@modules/notifications/repositories/fakes/FakeNotificationsRepository';
-import FakeCashProvider from '@shared/container/providers/CacheProvider/fakes/FakeCacheProvider';
+import FakeCacheProvider from '@shared/container/providers/CacheProvider/fakes/FakeCacheProvider';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import CreateAppointmentService from './CreateAppointmentService';
 
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
-let fakeCashProvider: FakeCashProvider;
-let createAppointmentService: CreateAppointmentService;
 let fakeNotificationsRepository: FakeNotificationsRepository;
+let fakeCacheProvider: FakeCacheProvider;
+let createAppointmentService: CreateAppointmentService;
 
 describe('CreateAppointmentService', () => {
   beforeEach(() => {
     fakeAppointmentsRepository = new FakeAppointmentsRepository();
     fakeNotificationsRepository = new FakeNotificationsRepository();
-    fakeCashProvider = new FakeCashProvider();
+    fakeCacheProvider = new FakeCacheProvider();
 
     createAppointmentService = new CreateAppointmentService(
       fakeAppointmentsRepository,
       fakeNotificationsRepository,
-      fakeCashProvider,
+      fakeCacheProvider,
     );
 
     // Traveling in time...
@@ -61,7 +61,7 @@ describe('CreateAppointmentService', () => {
       createAppointmentService.execute({
         date: new Date(2020, 4, 10, 11),
         user_id: 'user',
-        provider_id: 'provider-id',
+        provider_id: '231321312',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
@@ -70,8 +70,8 @@ describe('CreateAppointmentService', () => {
     await expect(
       createAppointmentService.execute({
         date: new Date(2020, 4, 10, 17),
-        user_id: '123123',
-        provider_id: '123123',
+        user_id: '231321312',
+        provider_id: '231321312',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });

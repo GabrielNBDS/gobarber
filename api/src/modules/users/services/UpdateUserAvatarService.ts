@@ -1,10 +1,9 @@
+import AppError from '@shared/errors/AppError';
 import { injectable, inject } from 'tsyringe';
 
-import AppError from '@shared/errors/AppError';
+import User from '@modules/users/infra/typeorm/entities/User';
+import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';
-import User from '../infra/typeorm/entities/User';
-
-import IUsersRepository from '../repositories/IUsersRepository';
 
 interface IRequest {
   user_id: string;
@@ -13,13 +12,20 @@ interface IRequest {
 
 @injectable()
 class UpdateUserAvatarService {
+  private usersRepository: IUsersRepository;
+
+  private storageProvider: IStorageProvider;
+
   constructor(
     @inject('UsersRepository')
-    private usersRepository: IUsersRepository,
+    usersRepository: IUsersRepository,
 
     @inject('StorageProvider')
-    private storageProvider: IStorageProvider,
-  ) {}
+    storageProvider: IStorageProvider,
+  ) {
+    this.usersRepository = usersRepository;
+    this.storageProvider = storageProvider;
+  }
 
   public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
     const user = await this.usersRepository.findById(user_id);
@@ -29,12 +35,13 @@ class UpdateUserAvatarService {
     }
 
     if (user.avatar) {
+      // Deletar avatar anterior
       await this.storageProvider.deleteFile(user.avatar);
     }
 
-    const fileName = await this.storageProvider.saveFile(avatarFilename);
+    const filename = await this.storageProvider.saveFile(avatarFilename);
 
-    user.avatar = fileName;
+    user.avatar = filename;
 
     await this.usersRepository.save(user);
 

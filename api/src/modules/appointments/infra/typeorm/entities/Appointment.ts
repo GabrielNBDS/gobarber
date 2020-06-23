@@ -10,6 +10,12 @@ import {
 
 import User from '@modules/users/infra/typeorm/entities/User';
 
+/**
+ * Um para um (oneToOne)
+ * Um para muitos(oneToMany)
+ * Muitos para muitos(manyToMany)
+ */
+
 @Entity('appointments')
 class Appointment {
   @PrimaryGeneratedColumn('uuid')

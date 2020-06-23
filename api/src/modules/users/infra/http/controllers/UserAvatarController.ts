@@ -4,7 +4,7 @@ import { classToClass } from 'class-transformer';
 
 import UpdateUserAvatarService from '@modules/users/services/UpdateUserAvatarService';
 
-export default class UserAvatarController {
+class UserAvatarController {
   public async update(request: Request, response: Response): Promise<Response> {
     const updateUserAvatar = container.resolve(UpdateUserAvatarService);
 
@@ -13,6 +13,10 @@ export default class UserAvatarController {
       avatarFilename: request.file.filename,
     });
 
-    return response.json(classToClass(user));
+    delete user.password;
+
+    return response.status(200).json(classToClass(user));
   }
 }
+
+export default UserAvatarController;

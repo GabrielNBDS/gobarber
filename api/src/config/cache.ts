@@ -1,4 +1,5 @@
 import { RedisOptions } from 'ioredis';
+import { REDIS_HOST, REDIS_PORT, REDIS_PASS } from '@shared/utils/environment';
 
 interface ICacheConfig {
   driver: 'redis';
@@ -13,9 +14,9 @@ export default {
 
   config: {
     redis: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-      password: process.env.REDIS_PASS || undefined,
+      host: REDIS_HOST,
+      port: REDIS_PORT,
+      password: REDIS_PASS || undefined,
     },
   },
 } as ICacheConfig;

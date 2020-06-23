@@ -1,45 +1,47 @@
-import { injectable, inject } from 'tsyringe';
 import path from 'path';
-
-import AppError from '@shared/errors/AppError';
-// import User from '../infra/typeorm/entities/User';
-
+import { APP_WEB_URL } from '@shared/utils/environment';
+import IUsersRepository from '@modules/users/repositories/IUsersRepository';
+import IUserTokensRepository from '@modules/users/repositories/IUserTokensRepository';
 import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
-import IUsersRepository from '../repositories/IUsersRepository';
-import IUserTokensRepository from '../repositories/IUserTokensRepository';
+
+// import User from '@modules/users/infra/typeorm/entities/User';
+import { injectable, inject } from 'tsyringe';
+import AppError from '@shared/errors/AppError';
 
 interface IRequest {
   email: string;
 }
-
 @injectable()
 class SendForgotPasswordEmailService {
+  private usersRepository: IUsersRepository;
+
+  private mailProvider: IMailProvider;
+
+  private userTokensRepository: IUserTokensRepository;
+
   constructor(
     @inject('UsersRepository')
-    private usersRepository: IUsersRepository,
+    usersRepository: IUsersRepository,
 
     @inject('MailProvider')
-    private mailProvider: IMailProvider,
+    mailProvider: IMailProvider,
 
     @inject('UserTokensRepository')
-    private userTokensRepository: IUserTokensRepository,
-  ) {}
+    userTokensRepository: IUserTokensRepository,
+  ) {
+    this.usersRepository = usersRepository;
+    this.mailProvider = mailProvider;
+    this.userTokensRepository = userTokensRepository;
+  }
 
   public async execute({ email }: IRequest): Promise<void> {
     const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
-      throw new AppError('User does not exist.');
+      throw new AppError('Email not exists', 401);
     }
 
     const { token } = await this.userTokensRepository.generate(user.id);
-
-    const forgotPasswordTemplate = path.resolve(
-      __dirname,
-      '..',
-      'views',
-      'forgot_password.hbs',
-    );
 
     await this.mailProvider.sendMail({
       to: {
@@ -48,11 +50,10 @@ class SendForgotPasswordEmailService {
       },
       subject: '[GoBarber] Recuperação de senha',
       templateData: {
-        file: forgotPasswordTemplate,
+        file: path.resolve(__dirname, '..', 'views', 'forgot_password.hbs'),
         variables: {
           name: user.name,
-          token,
-          link: `${process.env.APP_WEB_URL}/reset-password?token=${token}`,
+          link: `${APP_WEB_URL}/reset-password?token=${token}`,
         },
       },
     });
