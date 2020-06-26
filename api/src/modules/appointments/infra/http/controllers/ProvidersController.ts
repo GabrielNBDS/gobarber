@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
-import { classToClass } from 'class-transformer';
+import { classToClass, plainToClass } from 'class-transformer';
+
+import User from '@modules/users/infra/typeorm/entities/User';
 
 import ListProvidersService from '@modules/appointments/services/ListProvidersService';
 
@@ -14,7 +16,7 @@ class ProvidersController {
       user_id,
     });
 
-    return response.status(200).json(classToClass(providers));
+    return response.json(classToClass(plainToClass(User, providers)));
   }
 }
 

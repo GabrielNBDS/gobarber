@@ -35,7 +35,7 @@ export interface ProviderItem {
 const Dashboard: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
 
-  const { signOut, user } = useAuth();
+  const { user, signOut } = useAuth();
   const { navigate } = useNavigation();
 
   useEffect(() => {
@@ -44,9 +44,9 @@ const Dashboard: React.FC = () => {
     });
   }, [setProviders]);
 
-  /* const navigateToProfile = useCallback(() => {
+  const navigateToProfile = useCallback(() => {
     navigate('Profile');
-  }, [navigate]); */
+  }, [navigate]);
 
   const navigateToCreateAppointment = useCallback(
     (providerId: string) => {
@@ -62,8 +62,12 @@ const Dashboard: React.FC = () => {
           Bem vindo,{'\n'}
           <UserName>{user.name}</UserName>
         </HeaderTitle>
-        <ProfileButton onPress={signOut}>
-          <UserAvatar source={{ uri: user.avatar_url }} />
+        <ProfileButton onPress={navigateToProfile}>
+          <UserAvatar
+            source={{
+              uri: user.avatar_url,
+            }}
+          />
         </ProfileButton>
       </Header>
       <ProvidersList
@@ -76,7 +80,11 @@ const Dashboard: React.FC = () => {
           <ProviderContainer
             onPress={() => navigateToCreateAppointment(provider.id)}
           >
-            <ProviderAvatar source={{ uri: provider.avatar_url }} />
+            <ProviderAvatar
+              source={{
+                uri: provider.avatar_url,
+              }}
+            />
 
             <ProviderInfo>
               <ProviderName>{provider.name}</ProviderName>

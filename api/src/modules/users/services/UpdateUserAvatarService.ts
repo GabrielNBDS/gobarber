@@ -2,6 +2,7 @@ import AppError from '@shared/errors/AppError';
 import { injectable, inject } from 'tsyringe';
 
 import User from '@modules/users/infra/typeorm/entities/User';
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';
 
@@ -16,13 +17,19 @@ class UpdateUserAvatarService {
 
   private storageProvider: IStorageProvider;
 
+  private cacheProvider: ICacheProvider;
+
   constructor(
     @inject('UsersRepository')
     usersRepository: IUsersRepository,
 
     @inject('StorageProvider')
     storageProvider: IStorageProvider,
+
+    @inject('CacheProvider')
+    cacheProvider: ICacheProvider,
   ) {
+    this.cacheProvider = cacheProvider;
     this.usersRepository = usersRepository;
     this.storageProvider = storageProvider;
   }
@@ -44,6 +51,8 @@ class UpdateUserAvatarService {
     user.avatar = filename;
 
     await this.usersRepository.save(user);
+
+    await this.cacheProvider.invalidatePrefix('providers-list');
 
     return user;
   }
