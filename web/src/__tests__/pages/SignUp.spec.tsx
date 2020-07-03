@@ -55,23 +55,23 @@ describe('SignIn Page', () => {
     });
   });
 
-  // it('should not be able to sign up with invalid credentials', async () => {
-  //   const { getByPlaceholderText, getByText } = render(<SignUp />);
+  it('should not be able to sign up with invalid credentials', async () => {
+    const { getByPlaceholderText, getByText } = render(<SignUp />);
 
-  //   const nameField = getByPlaceholderText('Nome');
-  //   const emailField = getByPlaceholderText('E-mail');
-  //   const passwordField = getByPlaceholderText('Senha');
-  //   const buttonElement = getByText('Cadastrar');
+    const nameField = getByPlaceholderText('Nome');
+    const emailField = getByPlaceholderText('E-mail');
+    const passwordField = getByPlaceholderText('Senha');
+    const buttonElement = getByText('Cadastrar');
 
-  //   fireEvent.change(nameField, { target: { value: 'John Doe' } });
-  //   fireEvent.change(emailField, { target: { value: 'not-valid' } });
-  //   fireEvent.change(passwordField, { target: { value: '123456' } });
-  //   fireEvent.click(buttonElement);
+    fireEvent.change(nameField, { target: { value: 'John Doe' } });
+    fireEvent.change(emailField, { target: { value: 'not-valid' } });
+    fireEvent.change(passwordField, { target: { value: '123456' } });
+    fireEvent.click(buttonElement);
 
-  //   await wait(() => {
-  //     expect(mockedHistoryPush).not.toHaveBeenCalled();
-  //   });
-  // });
+    await wait(() => {
+      expect(mockedHistoryPush).not.toHaveBeenCalled();
+    });
+  });
 
   // it('should display an error if sign up fails', async () => {
   //   mockedApiCall.mockImplementation(() => {
