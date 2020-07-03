@@ -1,10 +1,13 @@
 import React from 'react';
+import MockAdapter from 'axios-mock-adapter';
 import { render, fireEvent, wait } from '@testing-library/react';
+
 import SignUp from '../../pages/SignUp';
+import api from '../../services/api';
 
 const mockedHistoryPush = jest.fn();
 const mockedAddToast = jest.fn();
-const mockedApiCall = jest.fn();
+const apiMock = new MockAdapter(api);
 
 jest.mock('react-router-dom', () => {
   return {
@@ -23,20 +26,14 @@ jest.mock('../../hooks/toast', () => {
   };
 });
 
-jest.mock('../../services/api', () => {
-  return {
-    post: () => mockedApiCall,
-  };
-});
-
 describe('SignIn Page', () => {
   beforeEach(() => {
     mockedHistoryPush.mockClear();
     mockedAddToast.mockClear();
-    mockedApiCall.mockClear();
   });
 
   it('should be able to sign up', async () => {
+    apiMock.onPost('users').replyOnce(200);
     const { getByPlaceholderText, getByText } = render(<SignUp />);
 
     const nameField = getByPlaceholderText('Nome');
@@ -64,8 +61,9 @@ describe('SignIn Page', () => {
     const buttonElement = getByText('Cadastrar');
 
     fireEvent.change(nameField, { target: { value: 'John Doe' } });
-    fireEvent.change(emailField, { target: { value: 'not-valid' } });
+    fireEvent.change(emailField, { target: { value: 'not-valid-email' } });
     fireEvent.change(passwordField, { target: { value: '123456' } });
+
     fireEvent.click(buttonElement);
 
     await wait(() => {
@@ -73,30 +71,28 @@ describe('SignIn Page', () => {
     });
   });
 
-  // it('should display an error if sign up fails', async () => {
-  //   mockedApiCall.mockImplementation(() => {
-  //     throw new Error();
-  //   });
+  it('should display an error if sign up fails', async () => {
+    apiMock.onPost('users').replyOnce(400);
 
-  //   const { getByPlaceholderText, getByText } = render(<SignUp />);
+    const { getByPlaceholderText, getByText } = render(<SignUp />);
 
-  //   const nameField = getByPlaceholderText('Nome');
-  //   const emailField = getByPlaceholderText('E-mail');
-  //   const passwordField = getByPlaceholderText('Senha');
-  //   const buttonElement = getByText('Cadastrar');
+    const nameField = getByPlaceholderText('Nome');
+    const emailField = getByPlaceholderText('E-mail');
+    const passwordField = getByPlaceholderText('Senha');
+    const buttonElement = getByText('Cadastrar');
 
-  //   fireEvent.change(nameField, { target: { value: 'John Doe' } });
-  //   fireEvent.change(emailField, { target: { value: 'johndoe@example.com' } });
-  //   fireEvent.change(passwordField, { target: { value: '123456' } });
+    fireEvent.change(nameField, { target: { value: 'John Doe' } });
+    fireEvent.change(emailField, { target: { value: 'johndoe@example.com' } });
+    fireEvent.change(passwordField, { target: { value: '123456' } });
 
-  //   fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
 
-  //   await wait(() => {
-  //     expect(mockedAddToast).toHaveBeenCalledWith(
-  //       expect.objectContaining({
-  //         type: 'error',
-  //       }),
-  //     );
-  //   });
-  // });
+    await wait(() => {
+      expect(mockedAddToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+        }),
+      );
+    });
+  });
 });
